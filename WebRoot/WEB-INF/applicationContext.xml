@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx.xsd">
+     
+     <!-- Annotation扫描的包 -->
+     <context:component-scan base-package="org.ssm.service,org.ssm.controller" />
+     
+     <!-- 数据源 -->
+     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+         <!-- 驱动 -->
+         <property name="driverClass" value="com.mysql.jdbc.Driver" />
+         <!-- URL -->
+         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ssm" />
+         <!-- 用户名 -->
+         <property name="user" value="root" />
+         <!-- 密码 -->
+         <property name="password" value="root" />
+         <!-- 初始连接大小 -->
+         <property name="initialPoolSize" value="10" />
+         <!-- 最大连接大小 -->
+         <property name="maxPoolSize" value="20" />
+         <!-- 最大连接空闲时间-->
+         <property name="maxIdleTime" value="20" />
+     </bean>  
+     
+     <!-- 事务管理 -->
+       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+           <property name="dataSource" ref="dataSource" />
+       </bean>
+       <!-- Annotation 事务驱动 -->
+       <tx:annotation-driven />
+       
+       <!-- mybatis 配置 -->
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+          <!-- 数据源 -->
+          <property name="dataSource" ref="dataSource"/>
+          <!-- 别名的包,这个包里面的所有类都需要定义别名 -->
+          <property name="typeAliasesPackage" value="org.ssm.model" />
+          <!-- Annotation映射类所在的包 -->
+          <property name="typeHandlersPackage" value="org.ssm.dao" />
+       </bean>
+       
+       <!-- UserDao userDao = sqlSession.getMapper(UserDao.class); -->
+       <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+           <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+           <property name="mapperInterface" value="org.ssm.dao.UserDao" />
+       </bean>
+       
+        
+  </beans>
